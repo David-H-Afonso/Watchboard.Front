@@ -1,0 +1,40 @@
+services:
+  api:
+    image: ghcr.io/${WATCHBOARD_OWNER:-david-h-afonso}/watchboard-api:${WATCHBOARD_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      AllowedHosts: "localhost;127.0.0.1;[::1];${WATCHBOARD_HOST:-localhost}"
+      Watchboard__AllowRemoteAccess: "true"
+      Watchboard__AllowedOrigins__0: "${WATCHBOARD_ORIGIN:-http://${WATCHBOARD_HOST:-localhost}:${WATCHBOARD_PORT:-5333}}"
+      Watchboard__AllowedOrigins__1: "http://localhost:${WATCHBOARD_PORT:-5333}"
+      Watchboard__AllowedOrigins__2: "http://127.0.0.1:${WATCHBOARD_PORT:-5333}"
+      Watchboard__SecureCookies: "${WATCHBOARD_SECURE_COOKIES:-false}"
+      Watchboard__EnablePolling: "${WATCHBOARD_POLLING:-true}"
+      Watchboard__SeedDefaults: "${WATCHBOARD_SEED_DEFAULTS:-true}"
+    volumes:
+      - watchboard-data:/app/storage
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 30s
+
+  web:
+    image: ghcr.io/${WATCHBOARD_OWNER:-david-h-afonso}/watchboard-web:${WATCHBOARD_TAG:-latest}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_UPSTREAM: http://api:8080
+    ports:
+      - "${WATCHBOARD_BIND:-127.0.0.1}:${WATCHBOARD_PORT:-5333}:8080"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+
+volumes:
+  watchboard-data:

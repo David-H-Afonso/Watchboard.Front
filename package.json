@@ -1,0 +1,42 @@
+{
+  "name": "watchboard-front",
+  "version": "1.0.0",
+  "description": "A local dashboard for software releases and game prices.",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/David-H-Afonso/Watchboard.Front.git" },
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.12.0 <23 || >=24.0.0" },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5333 --strictPort",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . --max-warnings 0",
+    "security:deps": "npm audit",
+    "preview": "vite preview --host 127.0.0.1 --port 5333 --strictPort"
+  },
+  "dependencies": {
+    "@fontsource-variable/manrope": "5.3.0",
+    "@fontsource-variable/ibm-plex-sans": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "lucide-react": "1.71.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "overrides": {
+    "minimatch": "11.0.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.18.6",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "eslint": "10.14.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-react-refresh": "0.5.7",
+    "globals": "17.14.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.2",
+    "vite": "8.3.7"
+  }
+}

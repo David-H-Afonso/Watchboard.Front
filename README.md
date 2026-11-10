@@ -1,48 +1,95 @@
-# Watchboard Front
+# Watchboard
 
-Independent **React 19 / TypeScript / Vite** repository. The .NET API is a separate repository. Frontend install/build/lint/unit tests need no parent workspace files or API checkout.
+A local dashboard for **software updates and game prices**, built with React 19, TypeScript and Vite.
 
-## Start
+[Español](README.es.md) · [Backend API](https://github.com/David-H-Afonso/Watchboard.Api) · [Changelog](CHANGELOG.md)
 
-Node.js **22.12+ or 24+**, current security patches.
+## Features
+
+- Installed-versus-published software versions, organized by reusable locations.
+- Steam and AllKeyShop comparison with platform, key/gift delivery and language labels.
+- Official Steam selected when its fresh price is equal or lower.
+- Source-specific targets, dated observed minima and price history.
+- Per-user widget filters and configuration import/export.
+- Private accounts, compact responsive layout and keyboard-accessible dialogs.
+
+## Docker
+
+GitHub Actions builds and publishes both repositories to GHCR:
+
+| Image | Architectures |
+| --- | --- |
+| `ghcr.io/david-h-afonso/watchboard-api:latest` | Linux amd64 |
+| `ghcr.io/david-h-afonso/watchboard-web:latest` | Linux amd64 |
+
+The 1.0 stack targets validated amd64 systems. ARM64 publication awaits native runtime verification; the .NET/QEMU test was not reliable.
+
+From this repository, with Docker Compose installed:
+
+```sh
+docker compose pull
+docker compose up -d
+```
+
+Open **http://localhost:5333** and choose the initial `admin` password. Only the web port is published; `/api` stays on the same origin. Both containers run unprivileged with read-only filesystems. The named `watchboard-data` volume retains the database and session keys.
+
+Optional values in an ignored `.env` file:
+
+| Variable | Default / purpose |
+| --- | --- |
+| `WATCHBOARD_PORT` | `5333`; choose another if already occupied |
+| `WATCHBOARD_BIND` | `127.0.0.1`; set `0.0.0.0` only for a trusted LAN |
+| `WATCHBOARD_HOST` | `localhost`; set the server IP or hostname for LAN access |
+| `WATCHBOARD_ORIGIN` | `http://<host>:<port>`; override for a reverse proxy's exact public origin |
+| `WATCHBOARD_SECURE_COOKIES` | `false`; set `true` when using HTTPS termination |
+| `WATCHBOARD_TAG` | `latest`; set `1.0.0` to pin both versioned images |
+| `WATCHBOARD_OWNER` | `david-h-afonso`; change for your fork |
+
+The API is never published directly. Do not expose this personal dashboard to the Internet. On a shared network, use HTTPS with a matching host/origin and secure cookies.
+
+Before updating, stop the stack and back up the complete data volume. Then run `docker compose pull` and `docker compose up -d`. Keep the old image tag and matching data backup for rollback; **do not use `docker compose down -v`** unless intentionally deleting all data.
+
+### Transfer images without a registry on the destination
+
+For another machine with the same CPU architecture, copy `compose.yaml` and the archive:
+
+```sh
+docker save -o watchboard-images.tar ghcr.io/david-h-afonso/watchboard-api:latest ghcr.io/david-h-afonso/watchboard-web:latest
+# On the destination:
+docker load -i watchboard-images.tar
+docker compose up -d --pull never
+```
+
+The archive contains images, **not your data**. A first GHCR publication may require making each package public in GitHub's package settings for anonymous downloads. Workflows use `GITHUB_TOKEN`, with no personal token required. Default-branch commits update `latest`; builds also receive a full `sha-…` tag. A `v1.0.0` Git tag adds `v1.0.0`, `1.0.0` and `1`. Pull requests do not publish images.
+
+## Development
+
+Requires **Node.js 22.12+ or 24+** and the separately running Watchboard API.
 
 ```sh
 npm ci
 npm run dev
 ```
 
-Open `http://127.0.0.1:5333`. For real data, run Watchboard API at `127.0.0.1:5197`; Vite proxies `/api` without permissive CORS. First access configures the API's **admin** password locally. No credentials in this repository or browser build environment.
+Open **http://127.0.0.1:5333**. Vite proxies `/api` to **http://127.0.0.1:5197**. Set the initial `admin` password through the first-run screen.
 
-## Checks
+## Build
 
 ```sh
-npm run build
 npm run lint
-npm run test
-npm run security:deps
+npm run build
 ```
 
-`npm run preview` also uses 5333. Production assets are in ignored `dist`. Deployment must serve `/api` on the same origin or explicitly design a secure proxy; the current local API is not an internet-ready service.
+Output is generated in `dist`. For a built installation, serve these assets and `/api` from the same origin. The application is intended for local use, not public Internet deployment.
 
-## UI and boundaries
+## Pricing and history
 
-- Compact overview, independent versions and price-detail views.
-- Paste GitHub/AllKeyShop/Steam URLs; explicit keys versus official Steam values/targets, current source selection and observed history.
-- Reusable, creatable project/location selectors. Known location aliases reuse **Linux**, **Steam Deck**, etc.; project name, category and installation provenance remain separate. One watch represents one installation, not an implied remote probe.
-- Widget rules select owned locations (`null`: all including unassigned; `[]`: no software). The default update-only rule requires a known installed version and a fresh, successful newer release; it excludes failed detections too. The unsaved preview uses the same eligibility rules.
-- Reciprocal verified Steam/AllKeyShop sources keep separate goals/history. Unverified matches have an explicit review/retry dialog; similar names are never presented as proof of the same edition.
-- Market offers prefer Steam activation (key or gift), then an explicitly labelled supported PC DRM when no eligible Steam offer exists. Accounts and gift cards remain excluded; restricted languages such as English-only are visible.
-- New market watches choose the lowest eligible published card/PayPal **total**, already including fees. Platform, delivery and payment provenance are preserved per reading. Optional details show the breakdown without permanent tutorial/disclaimer paragraphs.
-- A grouped game defaults to a real fresh official Steam offer whenever it costs the same or less than the chosen market offer. Raw observations and source-specific goals are never clamped, rewritten or transferred. Explicit source inspection remains available.
-- Daily API-side price collection and explicit manual refresh; navigating reads saved observations, not the stores. Lifetime and 730-day observed minima include their dates. The two-year chart exposes partial coverage and leaves missing data as gaps; no fabricated backfill or complete historical-price claim.
-- Configurable web widget, owned configuration **v2** export (portable location names, not runtime IDs), v1/v2 import and administrator user management. Multiple installations are not collapsed by the frontend.
-- Operation success toasts expire; actionable errors stay near the operation.
-- Source network work does not disable unrelated add/remove controls.
-- Owner-bound async actions, latest-wins/cancelled reads, authoritative post-write confirmation, per-user **v4** cache and cleanup after logout/auth denial. Earlier snapshots without platform/delivery/language metadata are not reinterpreted as current data. No passwords/cookies stored in localStorage.
-- Loaded authenticated frontend can fall back to public release APIs permitting CORS, then dated owned cache. Offline prices never confirm goals. Reload without the API cannot authenticate a new session. No native Windows/Plasma client or offline PWA shell is claimed.
+The API collects prices daily or on manual refresh. Steam activation is preferred; eligible alternatives identify their actual PC platform. Accounts and gift cards are excluded. Marketplace totals include published fees but remain estimates.
 
-The local `src/test/fixtures/version-cases.json` is this repo's small snapshot of the API comparison contract. It intentionally matches the API test fixture, but imports no sibling repo. UI/contract unit tests are not proof of backend authorization; the separate API repository exercises those policies with actual HTTP middleware/cookies/SQLite.
+History represents saved observations. Coverage may be partial; complete external two-year backfill is not included. Other devices require manually supplied installation versions, not remote detection.
 
-The current frontend expects the additive prices-v4 API contract (`src/types.ts`, `src/services/api.ts`), including actual platform/delivery/language and minimum-context fields. Unique exact full public product metadata drives automatic reciprocal matching; shared-ID registry membership is not required for every game. Missing prices do not mean missing identity. Public Steam appdetails does not supply two-year price history, and no permitted fee-inclusive AllKeyShop backfill is configured. Optional history information makes that coverage limitation available without a permanent lecture. Single-day readings are compact, not a huge empty plot.
+An already loaded session can retain dated cached data when the API fails; offline prices never confirm targets. There is no native desktop widget or offline PWA shell.
 
-Fonts are locally bundled; no unrequested UI framework, remote font tracking or motion library. Build artifacts, caches, environment credentials and runtime data must not be committed. No distribution license has been selected.
+## License
+
+[MIT](LICENSE) © 2026 David-H-Afonso. Fonts are provided by Fontsource packages under their respective licenses.
