@@ -1,4 +1,4 @@
-import { ExternalLink, Eye, EyeOff, Search, Trash2 } from 'lucide-react';
+import { ExternalLink, Eye, EyeOff, Pencil, Search, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import type { Location, SoftwareWatch } from '../types';
 import { exactTime, groupName, relativeTime, safeLink } from '../lib/format';
@@ -41,7 +41,8 @@ export default function Versions({ software, locations = [], disabled, openModal
           {!overview && <small title={exactTime(watch.lastSuccessAt)}>{relativeTime(watch.lastSuccessAt)}</small>}</div>
         <div className="version-state"><SoftwareStatus watch={watch} /></div>
         {!overview && <button className="icon-button" disabled={disabled} onClick={() => onInclude?.(watch, !watch.includeInWidget)} aria-label={`${watch.includeInWidget ? 'Ocultar' : 'Mostrar'} ${watch.name} en el widget`} aria-pressed={watch.includeInWidget}>{watch.includeInWidget ? <Eye size={17} /> : <EyeOff size={17} />}</button>}
-        {!overview && <button className="icon-button delete-button" aria-label={`Eliminar versión ${watch.name}`} disabled={disabled} onClick={() => openModal({ kind: 'delete-software', watch })}><Trash2 size={16} /></button>}
+        {!overview && <div className="version-actions"><button className="icon-button" aria-label={`Editar versión ${watch.name}`} title="Editar seguimiento" disabled={disabled} onClick={() => openModal({ kind: 'edit-software', watch })}><Pencil size={16} /></button>
+          <button className="icon-button delete-button" aria-label={`Eliminar versión ${watch.name}`} disabled={disabled} onClick={() => openModal({ kind: 'delete-software', watch })}><Trash2 size={16} /></button></div>}
       </article>)}
       {!rows.length && <div className="empty-state"><h3>{software.length ? 'Sin coincidencias' : 'Sin versiones todavía'}</h3><p>{software.length ? 'Cambia los filtros para ver más.' : 'Añade un enlace de GitHub o un paquete npm.'}</p></div>}
     </div>

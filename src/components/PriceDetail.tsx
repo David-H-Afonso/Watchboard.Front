@@ -1,4 +1,4 @@
-import { ExternalLink, Eye, EyeOff, Info, Plus, Target, Trash2 } from 'lucide-react';
+import { ExternalLink, Eye, EyeOff, Info, Pencil, Plus, Target, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import type { GameWatch, PricePoint } from '../types';
 import { exactTime, money, relativeTime, safeLink, shortDate } from '../lib/format';
@@ -31,7 +31,8 @@ export default function PriceDetail({ name, watch, watches, recommended, asOf, d
   const region = point?.region === 'GLOBAL' ? 'Global' : point?.region === 'EUROPE' ? 'Europa' : point?.region;
   return <section id="game-price-detail" className="panel game-detail lean-detail" aria-labelledby="game-detail-title">
     <div className="detail-heading"><div><h2 id="game-detail-title">{name}</h2><span>{watch.edition !== 'Standard' ? `${watch.edition} · ` : ''}{market && point ? `${platformLabel(point.activationPlatform)} · ${deliveryLabel(point.deliveryType)}` : sourceLabel(watch)}{region ? ` · ${region}` : ''}</span></div>
-      <div className="detail-actions"><button className="icon-button" disabled={disabled} onClick={() => onInclude?.(watch, !watch.includeInWidget)} aria-pressed={watch.includeInWidget} aria-label={`${watch.includeInWidget ? 'Ocultar' : 'Mostrar'} ${watch.name} en el widget`}>{watch.includeInWidget ? <Eye size={18} /> : <EyeOff size={18} />}</button>
+      <div className="detail-actions"><button className="icon-button" disabled={disabled} aria-label={`Editar juego ${watch.name}`} title={`Editar ${sourceLabel(watch)}`} onClick={() => openModal({ kind: 'edit-game', game: watch })}><Pencil size={18} /></button>
+        <button className="icon-button" disabled={disabled} onClick={() => onInclude?.(watch, !watch.includeInWidget)} aria-pressed={watch.includeInWidget} aria-label={`${watch.includeInWidget ? 'Ocultar' : 'Mostrar'} ${watch.name} en el widget`}>{watch.includeInWidget ? <Eye size={18} /> : <EyeOff size={18} />}</button>
         <button className="icon-button delete-button" disabled={disabled} aria-label={`Eliminar fuente ${sourceLabel(watch)} de ${watch.name}`} onClick={() => openModal({ kind: 'delete-game', game: watch })}><Trash2 size={18} /></button></div></div>
     <div className="source-selector" aria-label="Fuente del histórico">{watches.map(item => <button key={item.id} className={item.id === watch.id ? 'active' : ''} onClick={() => selectSource(item.id)} aria-pressed={item.id === watch.id}><span>{sourceLabel(item)}{item.provider === 'allkeyshop' && watches.filter(source => source.provider === 'allkeyshop').length > 1 && <small>{item.region === 'global' ? 'Global' : 'Europa + Global'} · {paymentLabel(item.payment)}</small>}</span></button>)}
       {!linked && <button className="add-source" disabled={disabled} onClick={() => openModal({ kind: 'counterpart', game: watch })}><Plus size={15} />{market ? 'Buscar Steam' : 'Buscar AllKeyShop'}</button>}</div>

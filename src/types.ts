@@ -142,7 +142,9 @@ export interface DashboardLoad {
 export interface RefreshResult { checked: number; succeeded: number; busy: boolean; finishedAt: string }
 export interface RefreshOptions { force: boolean; scope: 'all' | 'prices' | 'versions' }
 export type NewSoftware = Pick<SoftwareWatch, 'name' | 'group' | 'source' | 'installedVersion'> & { provider: 'github' | 'npm'; locationId?: string | null };
+export type UpdateSoftware = Pick<SoftwareWatch, 'name' | 'group' | 'provider' | 'source' | 'installedVersion' | 'installedOn' | 'locationId'>;
 export type NewGame = Pick<GameWatch, 'name' | 'sourceUrl' | 'edition' | 'region' | 'payment' | 'officialOnly' | 'targetCents'> & { includeSteam?: boolean; includeCounterpart?: boolean };
+export type UpdateGame = Pick<GameWatch, 'name' | 'sourceUrl' | 'edition' | 'region' | 'payment' | 'officialOnly' | 'targetCents'>;
 export interface ResolvedGame {
   provider: 'allkeyshop' | 'steam'; sourceUrl: string; name: string; steamAppId: string | null; editions: string[];
   steamUrl: string | null; allKeyShopUrl: string | null; matchStatus: MatchStatus; matchNote: string | null;

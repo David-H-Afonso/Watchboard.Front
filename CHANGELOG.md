@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Add prefilled edit dialogs for software and games, including typo corrections without deleting watches.
+- Keep historical game sources protected and retain selection after saving.
+
 ## 1.0.0 — 2026-11-10
 
 - Compact dashboard for software updates and game prices.

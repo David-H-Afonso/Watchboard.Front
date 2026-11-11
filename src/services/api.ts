@@ -1,4 +1,4 @@
-import type { AuthSession, ConfigDocument, GameMutation, ImportPreview, Location, NewGame, NewSoftware, RefreshOptions, RefreshResult, ResolvedGame, User, WidgetPreferences } from '../types';
+import type { AuthSession, ConfigDocument, GameMutation, ImportPreview, Location, NewGame, NewSoftware, RefreshOptions, RefreshResult, ResolvedGame, UpdateGame, UpdateSoftware, User, WidgetPreferences } from '../types';
 
 export class HttpError extends Error {
   constructor(message: string, public readonly status: number) { super(message); this.name = 'HttpError'; }
@@ -30,6 +30,7 @@ export function ownedApi(userId: string) {
     refresh: (options?: RefreshOptions) => call<RefreshResult>('/refresh', 'POST', options),
     detect: () => call<RefreshResult>('/software/detect', 'POST'),
     addSoftware: (value: NewSoftware) => call<{ id: string }>('/software', 'POST', value),
+    updateSoftware: (id: string, value: UpdateSoftware) => call<void>(`/software/${id}`, 'PUT', value),
     setInstalled: (id: string, installedVersion: string | null, installedOn: string | null, locationId?: string | null) => call<void>(`/software/${id}/installed`, 'PATCH', {
       installedVersion, installedOn, ...(locationId === undefined ? {} : { locationId, updateLocation: true }),
     }),
@@ -40,6 +41,7 @@ export function ownedApi(userId: string) {
     includeSoftware: (id: string, included: boolean) => call<void>(`/software/${id}/widget`, 'PATCH', { included }),
     resolveGame: (sourceUrl: string, signal?: AbortSignal) => call<ResolvedGame>('/games/resolve', 'POST', { sourceUrl }, signal),
     addGame: (value: NewGame) => call<GameMutation>('/games', 'POST', value),
+    updateGame: (id: string, value: UpdateGame) => call<GameMutation>(`/games/${id}`, 'PUT', value),
     pairGame: (id: string, sourceUrl?: string | null) => call<GameMutation>(`/games/${id}/counterpart`, 'POST', { sourceUrl }),
     setTarget: (id: string, targetCents: number | null) => call<void>(`/games/${id}/target`, 'PATCH', { targetCents }),
     deleteGame: (id: string) => call<void>(`/games/${id}`, 'DELETE'),

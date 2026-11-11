@@ -12,6 +12,7 @@ A local dashboard for **software updates and game prices**, built with React 19,
 - Source-specific targets, dated observed minima and price history.
 - Per-user widget filters and configuration import/export.
 - Private accounts, compact responsive layout and keyboard-accessible dialogs.
+- Edit existing software details and game names/targets without deleting their history. Unpriced sources can be corrected; historical source definitions remain protected.
 
 ## Docker
 
