@@ -10,6 +10,7 @@ Panel local de **actualizaciones de software y precios de juegos**, desarrollado
 - Comparación Steam ↔ AllKeyShop con plataforma, clave/regalo e idioma indicados.
 - Steam oficial como oferta principal cuando cuesta igual o menos.
 - Metas por fuente, mínimos observados con fecha e historial de precios.
+- Las ediciones verificadas se agrupan con su producto Steam sin mezclar históricos. Actualizar en Precios permite reintentar una asociación automática fallida.
 - Widget por usuario e importación/exportación de configuración.
 - Cuentas privadas y diseño adaptable con diálogos accesibles por teclado.
 - Edición de versiones y nombres/objetivos de juegos sin borrar el historial. Las fuentes sin lecturas se pueden corregir; las que ya tienen histórico mantienen su identidad y filtros.

@@ -3,7 +3,7 @@ import { Check, LoaderCircle } from 'lucide-react';
 import type { Dashboard, GameWatch, ResolvedGame, SoftwareWatch } from '../types';
 import { ownedApi, HttpError } from '../services/api';
 import { money, parseTarget } from '../lib/format';
-import { sourceLabel } from '../lib/tracking';
+import { gameGroupKey, sourceLabel } from '../lib/tracking';
 import { locationDisplayName, locationSuggestions, normalizedName } from '../lib/names';
 import CreatableComboBox from './CreatableComboBox';
 import Dialog from './Dialog';
@@ -43,7 +43,7 @@ export default function WatchDialog({ modal, data, onClose, mutate }: { modal: W
   const deleting = modal.kind.startsWith('delete');
   const steam = editedGame ? editedGame.provider === 'steam' : steamUrl(sourceUrl);
   const historyLocked = !!editedGame && (editedGame.history.length > 0 || editedGame.historyCoverage.oldestObservedAt !== null);
-  const sharedName = !!editedGame?.steamAppId && data.games.some(game => game.id !== editedGame.id && game.steamAppId === editedGame.steamAppId && game.edition === editedGame.edition);
+  const sharedName = !!editedGame && data.games.some(game => game.id !== editedGame.id && gameGroupKey(game) === gameGroupKey(editedGame));
   const locked = busy || resolving;
   const savedNames = data.software.map(watch => watch.name);
 

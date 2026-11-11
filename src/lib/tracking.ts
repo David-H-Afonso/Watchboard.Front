@@ -35,11 +35,25 @@ export function priceState(game: GameWatch): { label: string; tone: string } {
 }
 
 export interface GameGroup { key: string; name: string; watches: GameWatch[]; keys: GameWatch[]; steam: GameWatch[] }
+export function gameGroupKey(game: GameWatch): string {
+  const appId = game.steamAppId ?? (game.provider === 'steam' ? game.sourceUrl.match(/\/app\/(\d+)/)?.[1] : null);
+  if (!appId) return `source:${game.id}`;
+  let edition = game.edition.normalize('NFKC').trim().toLowerCase();
+  // A non-Standard market edition only joins this Steam SKU after an explicit verified link.
+  // Merely carrying a guessed/imported app ID or dropping an edition word is not sufficient.
+  if (game.provider === 'allkeyshop' && game.counterpartStatus === 'verified' && game.counterpartUrl) {
+    try {
+      const link = new URL(game.counterpartUrl);
+      if (link.protocol === 'https:' && link.hostname === 'store.steampowered.com' && link.pathname.match(/^\/app\/(\d+)\/?$/)?.[1] === appId)
+        edition = 'standard';
+    } catch { /* An invalid link never establishes a product mapping. */ }
+  }
+  return `steam:${appId}:${edition}`;
+}
 export function groupGames(games: GameWatch[]): GameGroup[] {
   const grouped = new Map<string, GameGroup>();
   for (const game of games) {
-    const appId = game.steamAppId ?? (game.provider === 'steam' ? game.sourceUrl.match(/\/app\/(\d+)/)?.[1] : null);
-    const key = appId ? `steam:${appId}:${game.edition.normalize('NFKC').trim().toLowerCase()}` : `source:${game.id}`;
+    const key = gameGroupKey(game);
     const group = grouped.get(key) ?? { key, name: game.name, watches: [], keys: [], steam: [] };
     group.watches.push(game);
     (game.provider === 'steam' ? group.steam : group.keys).push(game);

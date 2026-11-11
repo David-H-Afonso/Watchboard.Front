@@ -148,6 +148,7 @@ export type UpdateGame = Pick<GameWatch, 'name' | 'sourceUrl' | 'edition' | 'reg
 export interface ResolvedGame {
   provider: 'allkeyshop' | 'steam'; sourceUrl: string; name: string; steamAppId: string | null; editions: string[];
   steamUrl: string | null; allKeyShopUrl: string | null; matchStatus: MatchStatus; matchNote: string | null;
+  allKeyShopEdition?: string | null;
 }
 export interface GameMutation { id: string; relatedIds: string[]; matchStatus: MatchStatus; matchNote: string | null }
 export interface WidgetItem {

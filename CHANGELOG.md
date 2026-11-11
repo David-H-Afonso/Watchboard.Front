@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Group explicitly verified marketplace editions with their Steam SKU while retaining independent histories and filters.
+
 - Add prefilled edit dialogs for software and games, including typo corrections without deleting watches.
 - Keep historical game sources protected and retain selection after saving.
 
