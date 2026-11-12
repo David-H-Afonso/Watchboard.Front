@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Compact game list/detail spacing, remove nested list scrolling and show best plus official Steam prices together in overview and details.
+
 - Group explicitly verified marketplace editions with their Steam SKU while retaining independent histories and filters.
 
 - Add prefilled edit dialogs for software and games, including typo corrections without deleting watches.

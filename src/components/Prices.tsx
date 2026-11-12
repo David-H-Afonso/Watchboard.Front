@@ -2,7 +2,7 @@ import { Search } from 'lucide-react';
 import { useState } from 'react';
 import type { GameWatch } from '../types';
 import { money } from '../lib/format';
-import { freshPrice, groupGames, offerLabel, onSale, recommendedWatch, sourceLabel, type GameGroup } from '../lib/tracking';
+import { freshPrice, groupGames, offerLabel, officialSteamWatch, onSale, recommendedWatch, sourceLabel, type GameGroup } from '../lib/tracking';
 import type { WatchModal } from './WatchDialog';
 import PriceDetail from './PriceDetail';
 
@@ -37,9 +37,10 @@ export default function Prices({ games, disabled, openModal, asOf, selectedId, o
       <div className="game-list-header" aria-hidden="true"><span>Juego</span><span>Mejor precio</span><span>Objetivo</span></div>
       {(overview ? groups.slice(0,8) : groups).map(group => {
         const best = recommendedWatch(group.watches)!;
+        const steam = officialSteamWatch(group.watches);
         return <article className={`game-list-row ${selectedGroup?.key === group.key && !overview ? 'active' : ''}`} key={group.key}>
           <button className="game-name-button" onClick={() => choose(group)} aria-current={selectedGroup?.key === group.key && !overview ? 'true' : undefined}><strong>{group.name}</strong><small>{best.current ? best.provider === 'steam' ? 'Steam oficial' : offerLabel(best.current) : 'Sin precio'}{group.watches[0].edition !== 'Standard' ? ` · ${group.watches[0].edition}` : ''}</small></button>
-          <button className="price-cell-button" onClick={() => choose(group)}><span className="sr-only">Mejor precio de {group.name}: </span><strong>{money(best.current?.priceCents)}</strong><small>{best.current && !freshPrice(best) ? 'Antiguo' : best.current?.merchant ?? 'Pendiente'}</small></button>
+          <button className="price-cell-button" onClick={() => choose(group)} title={best.current?.merchant ?? 'Pendiente'}><span className="sr-only">Mejor precio de {group.name}: </span><strong><span className="price-label">{best.current && !freshPrice(best) ? 'Último' : 'Mejor'}</span>{money(best.current?.priceCents)}</strong><small className="steam-current-price">Steam {money(steam?.current?.priceCents)}{steam?.current && !freshPrice(steam) ? ' · Antiguo' : ''}</small></button>
           <div className="group-targets">{group.watches.filter(game => game.targetCents !== null).map(game => <button key={game.id} disabled={disabled} className={`goal-pill ${game.targetReached ? 'reached' : ''}`} onClick={() => openModal({ kind: 'target', game })} title={sourceLabel(game)}>{game.provider === 'steam' ? 'Steam' : 'AKS'} ≤ {money(game.targetCents)}</button>)}
             {overview && !group.watches.some(game => game.targetCents !== null) && <button className="text-button" disabled={disabled} onClick={() => openModal({ kind: 'target', game: best })}>Fijar meta</button>}</div>
         </article>;

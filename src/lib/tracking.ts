@@ -9,6 +9,8 @@ export const offerLabel = (point: Pick<PricePoint, 'activationPlatform' | 'deliv
   [platformLabel(point.activationPlatform), deliveryLabel(point.deliveryType), languageLabel(point.languageRestriction)].filter(Boolean).join(' · ');
 export const freshPrice = (watch: GameWatch) => watch.current !== null && !watch.error && !watch.stale;
 
+export const officialSteamWatch = (watches: GameWatch[]) => recommendedWatch(watches.filter(watch => watch.provider === 'steam'));
+
 export function recommendedWatch(watches: GameWatch[]): GameWatch | undefined {
   const fresh = watches.filter(freshPrice);
   const cheapest = (items: GameWatch[]) => items.reduce<GameWatch | undefined>((lowest, watch) => !lowest || watch.current!.priceCents < lowest.current!.priceCents ? watch : lowest, undefined);

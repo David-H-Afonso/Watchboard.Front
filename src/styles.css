@@ -126,6 +126,7 @@ input::placeholder { color: #617987; }
 .price-cell-button:hover, .price-cell-button.selected { background: #edf6f5; }
 .price-cell-button strong { font-family: var(--display); display: block; font-size: 17px; font-weight: 650; white-space: nowrap; }
 .price-cell-button small { display: block; font-size: 10px; color: var(--muted); margin-top: 4px; overflow-wrap: anywhere; }
+.price-label { font-family: 'IBM Plex Sans Variable', sans-serif; font-size: 11px; font-weight: 400; color: var(--muted); margin-right: 5px; letter-spacing: 0; }
 .group-targets { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 .goal-pill { display: inline-flex; align-items: center; background: #f0f5f7; color: #436778; border: 1px solid #dae5e9; border-radius: 4px; min-height: 44px; padding: 6px 8px; font-size: 11px; }
 .goal-pill.reached { color: #21684c; border-color: #bcdfcd; background: #e8f5ed; }
@@ -203,11 +204,23 @@ input::placeholder { color: #617987; }
 .source-issue p { padding-bottom: 10px; overflow-wrap: anywhere; }
 @media (min-width: 1201px) {
   .prices-layout { grid-template-columns: minmax(280px,340px) minmax(0,1fr); }
-  .prices-layout .price-watchlist { position: sticky; top: 24px; max-height: calc(100dvh - 48px); overflow-y: auto; }
+  .prices-layout .price-watchlist { position: static; max-height: none; overflow: clip; }
   .prices-layout .list-toolbar { gap: 8px; }
   .prices-layout .search-input { min-width: 100%; }
   .prices-layout .list-toolbar > label:last-child { width: 100%; }
   .prices-layout .list-toolbar select { width: 100%; }
+}
+.lean-detail .detail-heading { padding-block: 12px 8px; }
+.lean-detail .source-selector { margin-bottom: 12px; gap: 6px; }
+.lean-detail .detail-metrics { padding-bottom: 12px; }
+.lean-detail .detail-metrics > div { gap: 5px; }
+.lean-detail .offer-actions { padding-bottom: 10px; }
+.lean-detail .chart-toolbar { padding-top: 10px; }
+.lean-detail .price-chart > svg { max-height: 200px; }
+@media (min-width: 601px) {
+  .prices-layout .game-list-row { min-height: 64px; padding-block: 7px; gap: 2px 8px; }
+  .prices-layout .goal-pill { min-height: 28px; padding-block: 3px; }
+  .prices-layout .game-name-button { padding-block: 2px; }
 }
 .sale-row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; font-size: 12px; border-top: 1px solid #eef2f4; line-height: 1.7; }
 .sale-row > span { color: var(--muted); }
