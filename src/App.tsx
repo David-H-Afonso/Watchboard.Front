@@ -3,7 +3,7 @@ import { ArrowUpRight, Check, Gamepad2, GitBranch, LayoutDashboard, LoaderCircle
   Radar, RefreshCw, Settings2, Target, Unplug, X } from 'lucide-react';
 import { api, ownedApi, HttpError } from './services/api';
 import { clearCache, isUser } from './services/dashboard';
-import type { AuthSession, Dashboard, RefreshResult, User } from './types';
+import type { AuthSession, Dashboard, RefreshResult, SoftwareWatch, User } from './types';
 import useDashboard from './hooks/useDashboard';
 import { groupGames, hasSoftwareUpdate } from './lib/tracking';
 import Prices from './components/Prices';
@@ -12,6 +12,7 @@ import WatchDialog, { type Mutate, type WatchModal } from './components/WatchDia
 import AuthScreen from './components/AuthScreen';
 import WidgetView from './components/WidgetView';
 import Settings from './components/Settings';
+import UpdateGuideDialog from './components/UpdateGuideDialog';
 
 type View = 'overview' | 'versions' | 'prices' | 'widget' | 'settings';
 const navigation = [
@@ -55,6 +56,7 @@ function Workspace({ user, onSessionLost, logout }: { user: User; onSessionLost:
   const client = useMemo(() => ownedApi(user.id), [user.id]);
   const [view, setView] = useState<View>(currentView);
   const [modal, setModal] = useState<WatchModal | null>(null);
+  const [updateGuide, setUpdateGuide] = useState<SoftwareWatch | null>(null);
   const [toast, setToast] = useState<{ message: string } | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
@@ -130,9 +132,9 @@ function Workspace({ user, onSessionLost, logout }: { user: User; onSessionLost:
     {!data && <div className="panel startup-state"><LoaderCircle size={24} className="spinning" /><p>Cargando seguimientos…</p></div>}
     {data && view === 'overview' && <>
       <div className="summary-strip" aria-label="Resumen de seguimiento"><button onClick={() => navigate('versions')}><ArrowUpRight size={20} /><strong>{updates}</strong><span>actualizaciones</span></button><button onClick={() => navigate('prices')}><Target size={20} /><strong>{goals}</strong><span>metas alcanzadas</span></button><button onClick={() => navigate('prices')}><Gamepad2 size={20} /><strong>{groupGames(data.games).length}</strong><span>juegos</span></button><button onClick={() => navigate('versions')}><GitBranch size={20} /><strong>{data.software.length}</strong><span>versiones</span></button></div>
-      <div className="overview-grid"><Versions software={data.software} disabled={!online} openModal={setModal} overview onViewAll={() => navigate('versions')} />{priceProps && <Prices {...priceProps} overview onViewAll={() => navigate('prices')} />}</div>
+       <div className="overview-grid"><Versions software={data.software} disabled={!online} openModal={setModal} onUpdate={setUpdateGuide} overview onViewAll={() => navigate('versions')} />{priceProps && <Prices {...priceProps} overview onViewAll={() => navigate('prices')} />}</div>
     </>}
-    {data && view === 'versions' && <Versions software={data.software} locations={data.locations} disabled={!online} openModal={setModal} onInclude={(watch,value) => include('software',watch.id,value)} />}
+     {data && view === 'versions' && <Versions software={data.software} locations={data.locations} disabled={!online} openModal={setModal} onUpdate={setUpdateGuide} onInclude={(watch,value) => include('software',watch.id,value)} />}
     {data && view === 'prices' && <><form className="quick-add" onSubmit={addFromLink}><label><span className="sr-only">Enlace para añadir un juego</span><input value={quickLink} onChange={event => setQuickLink(event.target.value)} placeholder="Pega un enlace de AllKeyShop o Steam" inputMode="url" maxLength={500} autoCapitalize="off" /></label><button className="button primary" disabled={!online}><Plus size={17} />Añadir juego</button></form>{priceProps && <Prices {...priceProps} />}</>}
     {data && view === 'settings' && <Settings data={data} disabled={!online} mutate={mutate} openWidget={() => navigate('widget')} />}
     {data && view === 'widget' && <><div className="widget-app-bar"><button className="brand" onClick={() => navigate('overview')}><Radar size={22} />watchboard</button><button className="text-button" onClick={() => navigate('settings')}><Settings2 size={17} />Configurar</button></div><WidgetView data={data} /></>}
@@ -145,6 +147,7 @@ function Workspace({ user, onSessionLost, logout }: { user: User; onSessionLost:
     </aside>}
     <main id="main" className="main-content" tabIndex={-1}>{content}</main>
     {toast && <div className="toast" role="status"><Check size={18} /><span>{toast.message}</span><button className="icon-button" aria-label="Cerrar aviso" onClick={() => setToast(null)}><X size={16} /></button></div>}
-    {modal && data && <WatchDialog key={modal.kind + ('watch' in modal ? modal.watch.id : 'game' in modal ? modal.game.id : '')} modal={modal} data={data} onClose={() => setModal(null)} mutate={mutate} />}
+     {modal && data && <WatchDialog key={modal.kind + ('watch' in modal ? modal.watch.id : 'game' in modal ? modal.game.id : '')} modal={modal} data={data} onClose={() => setModal(null)} mutate={mutate} />}
+     {updateGuide && data && <UpdateGuideDialog key={updateGuide.id} watch={updateGuide} platform={data.platform} isContainer={data.isContainer === true} onClose={() => setUpdateGuide(null)} />}
   </div>;
 }

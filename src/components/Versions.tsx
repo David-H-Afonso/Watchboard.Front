@@ -5,18 +5,22 @@ import { exactTime, groupName, relativeTime, safeLink } from '../lib/format';
 import type { WatchModal } from './WatchDialog';
 import { hasSoftwareUpdate } from '../lib/tracking';
 
-export function SoftwareStatus({ watch }: { watch: SoftwareWatch }) {
+export function SoftwareStatus({ watch, onOpenUpdate }: { watch: SoftwareWatch; onOpenUpdate?: (watch: SoftwareWatch) => void }) {
   const status = watch.error ? ['error', 'Error'] : watch.detectionError ? ['muted', 'Detección pendiente'] : watch.stale && watch.latestVersion ? ['muted', 'Antigua'] :
     !watch.latestVersion ? ['muted', 'Pendiente'] : !watch.installedVersion ? ['muted', 'Sin indicar'] :
       ({ update: ['warning', 'Actualización'], current: ['success', 'Al día'], ahead: ['info', 'Más reciente'], unknown: ['muted', 'No comparable'] })[watch.comparison];
-  return <span className={`badge ${status[0]}`} title={watch.error ?? watch.detectionError ?? undefined}>{status[1]}</span>;
+  const canOpen = status[1] === 'Actualización' && !!onOpenUpdate;
+  const label = canOpen ? `Ver cómo actualizar ${watch.name}${watch.installedVersion ? ` de ${watch.installedVersion}` : ''} a ${watch.latestVersion}` : status[1];
+  return canOpen ? <button type="button" className={`badge ${status[0]} badge-action`} title="Ver opciones para actualizar" aria-label={label}
+    onClick={() => onOpenUpdate?.(watch)}>{status[1]}</button> : <span className={`badge ${status[0]}`} title={watch.error ?? watch.detectionError ?? undefined}>{status[1]}</span>;
 }
 
 interface Props {
   software: SoftwareWatch[]; locations?: Location[]; disabled: boolean; openModal: (modal: WatchModal) => void; overview?: boolean;
+  onUpdate?: (watch: SoftwareWatch) => void;
   onInclude?: (watch: SoftwareWatch, included: boolean) => void; onViewAll?: () => void;
 }
-export default function Versions({ software, locations = [], disabled, openModal, overview = false, onInclude, onViewAll }: Props) {
+export default function Versions({ software, locations = [], disabled, openModal, overview = false, onUpdate, onInclude, onViewAll }: Props) {
   const [query, setQuery] = useState('');
   const [group, setGroup] = useState('all');
   const [updatesOnly, setUpdatesOnly] = useState(false);
@@ -39,7 +43,7 @@ export default function Versions({ software, locations = [], disabled, openModal
           {!overview && watch.installedMethod && <small title={`${exactTime(watch.installedCheckedAt)}${watch.installedOn ? ` · ${watch.installedOn}` : ''}`}>{watch.installedMethod === 'detected' ? `Detectada en ${watch.installedOn ?? 'el equipo del panel'}` : 'Manual'}</small>}</div>
         <div className="version-cell"><span className="mobile-label">Publicada</span>{watch.latestVersion ? <a className="version-latest" href={safeLink(watch.releaseUrl ?? watch.sourceUrl)} target="_blank" rel="noopener noreferrer" title={exactTime(watch.releasePublishedAt ?? watch.lastSuccessAt)}>{watch.latestVersion}<ExternalLink size={12} /></a> : <span>—</span>}
           {!overview && <small title={exactTime(watch.lastSuccessAt)}>{relativeTime(watch.lastSuccessAt)}</small>}</div>
-        <div className="version-state"><SoftwareStatus watch={watch} /></div>
+         <div className="version-state"><SoftwareStatus watch={watch} onOpenUpdate={onUpdate} /></div>
         {!overview && <button className="icon-button" disabled={disabled} onClick={() => onInclude?.(watch, !watch.includeInWidget)} aria-label={`${watch.includeInWidget ? 'Ocultar' : 'Mostrar'} ${watch.name} en el widget`} aria-pressed={watch.includeInWidget}>{watch.includeInWidget ? <Eye size={17} /> : <EyeOff size={17} />}</button>}
         {!overview && <div className="version-actions"><button className="icon-button" aria-label={`Editar versión ${watch.name}`} title="Editar seguimiento" disabled={disabled} onClick={() => openModal({ kind: 'edit-software', watch })}><Pencil size={16} /></button>
           <button className="icon-button delete-button" aria-label={`Eliminar versión ${watch.name}`} disabled={disabled} onClick={() => openModal({ kind: 'delete-software', watch })}><Trash2 size={16} /></button></div>}

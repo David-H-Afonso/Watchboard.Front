@@ -23,7 +23,8 @@ export function isPreferences(value: unknown): value is WidgetPreferences {
 }
 export function isDashboard(value: unknown): value is Dashboard {
   if (!record(value) || !isUser(value.user) || !isPreferences(value.preferences) || !date(value.generatedAt) || !text(value.host) || !text(value.platform) ||
-    typeof value.pollingEnabled !== 'boolean' || typeof value.priceIntervalMinutes !== 'number' || typeof value.versionIntervalMinutes !== 'number' ||
+     typeof value.pollingEnabled !== 'boolean' || typeof value.priceIntervalMinutes !== 'number' || typeof value.versionIntervalMinutes !== 'number' ||
+     value.isContainer !== undefined && typeof value.isContainer !== 'boolean' ||
     !Array.isArray(value.software) || !Array.isArray(value.games) || value.software.length > 100 || value.games.length > 100 ||
     !Array.isArray(value.locations) || value.locations.length > 100 || !value.locations.every((item: unknown) => record(item) && text(item.id, 100) && text(item.name, 100))) return false;
   const locations = new Map((value.locations as Array<{ id: string; name: string }>).map(location => [location.id, location.name]));

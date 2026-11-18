@@ -7,6 +7,7 @@ Panel local de **actualizaciones de software y precios de juegos**, desarrollado
 ## Funciones
 
 - Versiones instaladas y publicadas, agrupadas por ubicaciones reutilizables.
+- Pulsa un estado de actualización para ver instrucciones copiables por sistema/proveedor y cómo comprobar la versión. Watchboard no ejecuta comandos.
 - Comparación Steam ↔ AllKeyShop con plataforma, clave/regalo e idioma indicados.
 - Steam oficial como oferta principal cuando cuesta igual o menos.
 - Metas por fuente, mínimos observados con fecha e historial de precios.

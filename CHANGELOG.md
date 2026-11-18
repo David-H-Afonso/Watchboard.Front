@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Make update badges open safe, copyable OS/provider guidance with verification and explicit install-method/remote/container caveats.
+
 - Compact game list/detail spacing, remove nested list scrolling and show best plus official Steam prices together in overview and details.
 
 - Group explicitly verified marketplace editions with their Steam SKU while retaining independent histories and filters.

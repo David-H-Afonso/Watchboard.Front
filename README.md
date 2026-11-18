@@ -7,6 +7,7 @@ A local dashboard for **software updates and game prices**, built with React 19,
 ## Features
 
 - Installed-versus-published software versions, organized by reusable locations.
+- Click a fresh update status for copyable OS/provider-specific guidance and a version check. Commands are never executed by Watchboard.
 - Steam and AllKeyShop comparison with platform, key/gift delivery and language labels.
 - Official Steam selected when its fresh price is equal or lower.
 - Source-specific targets, dated observed minima and price history.

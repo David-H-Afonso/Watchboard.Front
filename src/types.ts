@@ -131,6 +131,7 @@ export interface Dashboard {
   user: User;
   preferences: WidgetPreferences;
   locations: Location[];
+  isContainer?: boolean;
 }
 export interface DashboardLoad {
   data: Dashboard;
